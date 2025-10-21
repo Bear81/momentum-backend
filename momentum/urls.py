@@ -11,4 +11,7 @@ urlpatterns = [
 
     # Registration
     path("api/v1/auth/", include("accounts.urls")),
+
+    # Habits API
+    path("api/v1/", include("habits.urls")),
 ]
