@@ -1,6 +1,16 @@
-﻿from rest_framework import generics, permissions
+﻿from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
+from rest_framework import status
+
 from .serializers import RegisterSerializer
 
-class RegisterView(generics.CreateAPIView):
-    serializer_class = RegisterSerializer
-    permission_classes = [permissions.AllowAny]
+
+class RegisterView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        serializer = RegisterSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.save()  # returns dict with user + tokens
+        return Response(data, status=status.HTTP_201_CREATED)
