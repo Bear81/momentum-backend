@@ -8,6 +8,7 @@ from .serializers import RegisterSerializer
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
+    authentication_classes = []
 
     def post(self, request, *args, **kwargs):
         serializer = RegisterSerializer(data=request.data)
