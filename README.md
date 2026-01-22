@@ -15,9 +15,51 @@ The API supports the deployed React frontend hosted on Heroku.
 
 ---
 
+Recent Fixes (Resubmission)
+Authentication & API Integration
+
+Fixed broken registration and login flows caused by malformed API URLs and duplicated path prefixes.
+
+Standardised frontend API configuration to use a single canonical Axios instance.
+
+Centralised /api/v1/ handling in the Axios base URL to prevent duplicated paths (e.g. /api/v1/api/v1/...).
+
+Removed legacy/duplicate Axios configuration that caused inconsistent request behaviour.
+
+Ensured authentication tokens are not attached to public endpoints (e.g. user registration).
+
+Updated backend registration endpoint to explicitly allow unauthenticated access.
+
+CRUD Functionality
+
+Restored full authenticated CRUD functionality for Habits:
+
+Create habit
+
+View habit list
+
+Edit habit
+
+Delete habit
+
+Verified that protected routes are inaccessible to unauthenticated users.
+
+Production Verification
+
+The following flows have been manually tested on the deployed production environment:
+
+User registration
+
+Login / logout
+
+Auth persistence across hard refresh
+
+Full CRUD lifecycle for habits while authenticated
+
 ## Database Schema
 
 **Models include:**
+
 - **User** (via Django AllAuth)
 - **Profile** (OneToOne relationship with User)
 - **Habit** (tracks title, frequency, completion, timestamps)
@@ -28,23 +70,25 @@ The API supports the deployed React frontend hosted on Heroku.
 
 ## Key Features
 
-| Feature | Description |
-|----------|-------------|
-| **CRUD API** | Endpoints for creating, reading, updating, and deleting habits. |
-| **Authentication** | Secure user login, logout, and registration via dj-rest-auth. |
-| **Permissions** | Users can only access and modify their own habits. |
-| **Pagination & Filtering** | Paginated and filterable API responses. |
-| **Deployment Ready** | Configured for Heroku with PostgreSQL database. |
+| Feature                    | Description                                                     |
+| -------------------------- | --------------------------------------------------------------- |
+| **CRUD API**               | Endpoints for creating, reading, updating, and deleting habits. |
+| **Authentication**         | Secure user login, logout, and registration via dj-rest-auth.   |
+| **Permissions**            | Users can only access and modify their own habits.              |
+| **Pagination & Filtering** | Paginated and filterable API responses.                         |
+| **Deployment Ready**       | Configured for Heroku with PostgreSQL database.                 |
 
 ---
 
 ## Technologies Used
 
 ### Languages & Frameworks
+
 - Python 3.12
 - Django 5 / Django REST Framework
 
 ### Libraries & Packages
+
 - dj-rest-auth / django-allauth (authentication)
 - django-cors-headers
 - psycopg2 / dj-database-url (PostgreSQL integration)
@@ -53,6 +97,7 @@ The API supports the deployed React frontend hosted on Heroku.
 - PyJWT / SimpleJWT (token handling)
 
 ### Other Tools
+
 - Git / GitHub for version control
 - Heroku for deployment
 - ElephantSQL for database hosting
@@ -65,10 +110,10 @@ The API supports the deployed React frontend hosted on Heroku.
 
 Automated tests implemented via Django’s built-in `TestCase` class.
 
-| File | Description |
-|------|--------------|
+| File             | Description                                          |
+| ---------------- | ---------------------------------------------------- |
 | `test_models.py` | Validates model creation and string representations. |
-| `test_views.py` | Tests CRUD API endpoints for authenticated users. |
+| `test_views.py`  | Tests CRUD API endpoints for authenticated users.    |
 
 All automated tests ran successfully using `python manage.py test`.
 
@@ -76,17 +121,17 @@ All automated tests ran successfully using `python manage.py test`.
 
 ### Manual Testing
 
-| Feature | Expected Result | Actual Result | Pass |
-|----------|----------------|----------------|------|
-| **Register User** | Creates new user via `/dj-rest-auth/registration/`. | Works as expected. | ✅ |
-| **Login User** | Returns token cookies. | Works as expected. | ✅ |
-| **Logout User** | Clears authentication cookies. | Works as expected. | ✅ |
-| **Create Habit** | POST creates new habit record. | Works as expected. | ✅ |
-| **Edit Habit** | PATCH/PUT updates habit fields. | Works as expected. | ✅ |
-| **Delete Habit** | DELETE removes record. | Works as expected. | ✅ |
-| **Permission Check** | Other users cannot modify foreign habits. | Works as expected. | ✅ |
-| **Pagination** | Returns 10 results per page. | Works as expected. | ✅ |
-| **Validation** | Missing required field returns 400 error. | Works as expected. | ✅ |
+| Feature              | Expected Result                                     | Actual Result      | Pass |
+| -------------------- | --------------------------------------------------- | ------------------ | ---- |
+| **Register User**    | Creates new user via `/dj-rest-auth/registration/`. | Works as expected. | ✅   |
+| **Login User**       | Returns token cookies.                              | Works as expected. | ✅   |
+| **Logout User**      | Clears authentication cookies.                      | Works as expected. | ✅   |
+| **Create Habit**     | POST creates new habit record.                      | Works as expected. | ✅   |
+| **Edit Habit**       | PATCH/PUT updates habit fields.                     | Works as expected. | ✅   |
+| **Delete Habit**     | DELETE removes record.                              | Works as expected. | ✅   |
+| **Permission Check** | Other users cannot modify foreign habits.           | Works as expected. | ✅   |
+| **Pagination**       | Returns 10 results per page.                        | Works as expected. | ✅   |
+| **Validation**       | Missing required field returns 400 error.           | Works as expected. | ✅   |
 
 ---
 
@@ -95,35 +140,36 @@ All automated tests ran successfully using `python manage.py test`.
 Deployed on **Heroku** with a connected **PostgreSQL** database via **ElephantSQL**.
 
 ### Deployment Steps
-1. Install dependencies:  
+
+1. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-2. Add allowed hosts and environment variables:  
+2. Add allowed hosts and environment variables:
    ```python
    ALLOWED_HOSTS = ['momentum-backend-d83acc164707.herokuapp.com', 'localhost']
    ```
-3. Set up PostgreSQL in Heroku → Resources → Add-ons → “Heroku Postgres”.  
-4. Add `DATABASE_URL` and `SECRET_KEY` to Heroku Config Vars.  
-5. Set `DEBUG=False` for production.  
-6. Push changes to GitHub and trigger Heroku auto-deploy.  
+3. Set up PostgreSQL in Heroku → Resources → Add-ons → “Heroku Postgres”.
+4. Add `DATABASE_URL` and `SECRET_KEY` to Heroku Config Vars.
+5. Set `DEBUG=False` for production.
+6. Push changes to GitHub and trigger Heroku auto-deploy.
 
 ---
 
 ## Bugs & Fixes
 
-| Bug | Fix |
-|-----|-----|
-| `dj-rest-auth` logout bug | Custom logout route added to clear cookies. |
-| Email registration serializer error | Updated RegisterSerializer import and settings. |
-| Token authentication conflict | SessionAuthentication enabled for browsable API. |
+| Bug                                 | Fix                                              |
+| ----------------------------------- | ------------------------------------------------ |
+| `dj-rest-auth` logout bug           | Custom logout route added to clear cookies.      |
+| Email registration serializer error | Updated RegisterSerializer import and settings.  |
+| Token authentication conflict       | SessionAuthentication enabled for browsable API. |
 
 ---
 
 ## Credits
 
-- Built from the Code Institute DRF API walkthrough.  
-- Deployment steps follow FoodSnap backend example by Art Cuddy.  
+- Built from the Code Institute DRF API walkthrough.
+- Deployment steps follow FoodSnap backend example by Art Cuddy.
 
 ---
 
